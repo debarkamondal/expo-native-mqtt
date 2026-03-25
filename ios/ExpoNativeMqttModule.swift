@@ -122,7 +122,7 @@ extension ExpoNativeMqttModule: CocoaMQTTDelegate {
     }
   }
 
-  public func mqtt(_ mqtt: CocoaMQTT, didDisconnectWithError error: Error?) {
+  public func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError error: Error?) {
     sendEvent("onMqttDisconnected", [
       "error": error?.localizedDescription ?? "clean disconnect"
     ])
@@ -138,12 +138,16 @@ extension ExpoNativeMqttModule: CocoaMQTTDelegate {
     ])
   }
 
-  public func mqtt(_ mqtt: CocoaMQTT, didSubscribeToTopic topics: [String], id: UInt16) {
+  public func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
+    // success dictionary contains topics as keys and granted QOS as values
+    let topics = success.allKeys.compactMap { $0 as? String }
     sendEvent("onMqttSubscribed", ["topics": topics])
   }
 
-  public func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeFromTopic topic: String) {
-    sendEvent("onMqttUnsubscribed", ["topic": topic])
+  public func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String]) {
+    for topic in topics {
+      sendEvent("onMqttUnsubscribed", ["topic": topic])
+    }
   }
 
   public func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -152,7 +156,7 @@ extension ExpoNativeMqttModule: CocoaMQTTDelegate {
 
   public func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) { }
 
-  public func mqtt(_ mqtt: CocoaMQTT, didSubscribeToTopics topics: [String], id: UInt16) { }
+  public func mqttDidPing(_ mqtt: CocoaMQTT) { }
 
-  public func mqttOneMinute(_ mqtt: CocoaMQTT) { }
+  public func mqttDidReceivePong(_ mqtt: CocoaMQTT) { }
 }
