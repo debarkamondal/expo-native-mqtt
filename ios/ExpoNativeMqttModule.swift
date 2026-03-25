@@ -45,7 +45,7 @@ public class ExpoNativeMqttModule: Module {
       // SSL Setup
       if brokerUrl.hasPrefix("ssl://") || brokerUrl.hasPrefix("wss://") {
         self.mqtt?.enableSSL = true
-        self.mqtt?.allowUntrustCACert = true // match standard RN-Mqtt-Client behavior
+        self.mqtt?.allowUntrustCACertificate = true 
       }
 
       self.isDisconnectingManually = false
